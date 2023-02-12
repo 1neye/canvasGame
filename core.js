@@ -25,9 +25,10 @@ let canvas = document.querySelector('#canvas'),
         velocityX: 0,
         velocityY: 0,
     },
-    mousePos = {
-        mouse1: [],
-        mouse2: []
+    linePos = [[0,0]],
+    mouse = {
+       x: null,
+       y: null
     }
 
 
@@ -35,7 +36,10 @@ let canvas = document.querySelector('#canvas'),
 let animate = () => {
     window.requestAnimationFrame(animate)
     drawHero(canvas.width, canvas.height, ctx, hero)
-    // drawLines(canvas, ctx, mousePos)
+    linePos.map(e => {
+            drawLines(ctx, [0, 0, mouse.x, mouse.y])
+    })
+   
     hero.velocityX = 0
     if (keys.d) hero.velocityX = 3
     else if (keys.a) hero.velocityX = -3
@@ -61,12 +65,12 @@ let animate = () => {
     }
 
 
-    if(mousePos.mouse2.length === 2) {
-        ctx.beginPath();
-            ctx.moveTo(mousePos.mouse1[0], mousePos.mouse1[1]);
-            ctx.lineTo(mousePos.mouse2[0], mousePos.mouse2[1]);
-            ctx.stroke();
-    }
+    // if(mousePos.mouse2.length === 2) {
+    //     ctx.beginPath();
+    //         ctx.moveTo(mousePos.mouse1[0], mousePos.mouse1[1]);
+    //         ctx.lineTo(mousePos.mouse2[0], mousePos.mouse2[1]);
+    //         ctx.stroke();
+    // }
 }
 
 let init = async () => {
@@ -81,19 +85,19 @@ init()
 
 
 
-
+let arr = []
 canvas.addEventListener("click", function (evt) {
     var getMousePosVar = getMousePos(canvas, evt);
-    if(mousePos.mouse1.length === 0) {
-        mousePos.mouse1.push(...[getMousePosVar.x, getMousePosVar.y])
+    
+    if(arr.length < 4) {
+        arr.push(...[getMousePosVar.x, getMousePosVar.y])
     } else {
-        if(mousePos.mouse2 <= 1) {
-            mousePos.mouse2.push(...[getMousePosVar.x, getMousePosVar.y])
-        }
-        
-    }
+        linePos.push(arr)
+        arr = []
+        arr.push(...[getMousePosVar.x, getMousePosVar.y])
 
-    console.log(mousePos)
+    }
+    console.log(linePos, arr)
 })
 
 function getMousePos(canvas, evt) {
@@ -102,4 +106,10 @@ function getMousePos(canvas, evt) {
         x: evt.clientX - rect.left,
         y: evt.clientY - rect.top
     };
+}
+
+
+canvas.onmousemove = function(e){
+    mouse.x = e.clientX
+    mouse.y = e.clientY
 }
