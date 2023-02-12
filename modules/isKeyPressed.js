@@ -14,6 +14,7 @@ let isKeyPressed = (keys) => {
     })
     
     window.addEventListener('keydown', (e) => {
+        if(keys.aOrd.length > 1) keys.aOrd.pop()
         keys.aOrd.push(e.code)
         switch (e.code) {
             case 'KeyD':
