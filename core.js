@@ -1,7 +1,9 @@
+import collision from "./modules/collision.js";
 import drawHero from "./modules/drawHero.js";
 import drawLines from "./modules/drawLines.js";
 import isKeyPressed from "./modules/isKeyPressed.js";
 import loadMatherials from "./modules/loadMatherials.js";
+import pushLinesPos from "./modules/pushLinesPos.js";
 
 let canvas = document.querySelector('#canvas'),
     ctx = canvas.getContext('2d'),
@@ -13,6 +15,7 @@ let canvas = document.querySelector('#canvas'),
         d: false,
         aOrd: [],
         space: false,
+        shift: false,
 
     },
     hero = {
@@ -25,7 +28,7 @@ let canvas = document.querySelector('#canvas'),
         velocityX: 0,
         velocityY: 0,
     },
-    linePos = [[0,0]],
+    linePos = [[]],
     mouse = {
        x: null,
        y: null
@@ -36,17 +39,26 @@ let canvas = document.querySelector('#canvas'),
 let animate = () => {
     window.requestAnimationFrame(animate)
     drawHero(canvas.width, canvas.height, ctx, hero)
-    linePos.map(e => {
-            drawLines(ctx, [0, 0, mouse.x, mouse.y])
+    // drawLines(ctx, [0, 600, 600,600])
+
+    if(keys.shift) {
+        canvas.removeEventListener('click', SomeFunc)
+        } else {
+            canvas.addEventListener('click', SomeFunc)
+        }
+
+    // console.log(collision(hero.heroX, hero.heroY, hero.heroW, hero.heroH, 0, 600, 600, 10))
+    linePos.map((e, idx) => {
+            drawLines(ctx, [e[0], e[1], e[2], e[3]], mouse.x, mouse.y, keys.shift, canvas, linePos, idx)
     })
-   
+
     hero.velocityX = 0
     if (keys.d) hero.velocityX = 3
     else if (keys.a) hero.velocityX = -3
 
     if(keys.space && Math.floor(hero.heroH + hero.velocityY + hero.heroY) === canvas.height) hero.velocityY = -10
 
-    if(canvas.height > hero.heroH + hero.velocityY + hero.heroY) {
+    if(canvas.height > hero.heroH + hero.velocityY + hero.heroY ) {
         hero.velocityY += gravity 
     } 
     else {
@@ -64,13 +76,6 @@ let animate = () => {
         }
     }
 
-
-    // if(mousePos.mouse2.length === 2) {
-    //     ctx.beginPath();
-    //         ctx.moveTo(mousePos.mouse1[0], mousePos.mouse1[1]);
-    //         ctx.lineTo(mousePos.mouse2[0], mousePos.mouse2[1]);
-    //         ctx.stroke();
-    // }
 }
 
 let init = async () => {
@@ -85,28 +90,25 @@ init()
 
 
 
-let arr = []
-canvas.addEventListener("click", function (evt) {
-    var getMousePosVar = getMousePos(canvas, evt);
-    
-    if(arr.length < 4) {
-        arr.push(...[getMousePosVar.x, getMousePosVar.y])
-    } else {
-        linePos.push(arr)
-        arr = []
-        arr.push(...[getMousePosVar.x, getMousePosVar.y])
 
-    }
-    console.log(linePos, arr)
-})
 
-function getMousePos(canvas, evt) {
-    var rect = canvas.getBoundingClientRect();
-    return {
-        x: evt.clientX - rect.left,
-        y: evt.clientY - rect.top
-    };
+// canvas.addEventListener("click", function (evt) {
+//     var getMousePosVar = getMousePos(canvas, evt);
+
+//     if(linePos[linePos.length -1].length < 3) {
+//         linePos[linePos.length -1].push(...[getMousePosVar.x, getMousePosVar.y])
+//     } else if(linePos[linePos.length -1].length === 4) {
+//         linePos.push([getMousePosVar.x, getMousePosVar.y])
+//     }
+//     console.log(linePos)
+
+// })
+function SomeFunc (e) {
+    pushLinesPos(linePos, canvas, e, keys.shift)
 }
+canvas.addEventListener("click", SomeFunc)
+
+
 
 
 canvas.onmousemove = function(e){

@@ -10,11 +10,14 @@ let isKeyPressed = (keys) => {
             case 'Space':
                 keys.space = false
                 break
+            case 'ShiftLeft':
+                keys.shift = false
+                break
         }
     })
-    
+
     window.addEventListener('keydown', (e) => {
-        if(keys.aOrd.length > 1) keys.aOrd.pop()
+        if (keys.aOrd.length > 1) keys.aOrd.pop()
         keys.aOrd.push(e.code)
         switch (e.code) {
             case 'KeyD':
@@ -25,6 +28,9 @@ let isKeyPressed = (keys) => {
                 break
             case 'Space':
                 keys.space = true
+                break
+            case 'ShiftLeft':
+                keys.shift = true
                 break
         }
     })
